@@ -1,7 +1,8 @@
 <archetype>
   <id>jersey-cassandra</id>
   <sources>
-    <source>src/main/java/App.java</source>
+    <source>src/main/java/Application.java</source>
+    <source>src/main/java/ClusterService.java</source>
   </sources>
   <testSources>
     <source>src/test/java/AppTest.java</source>
