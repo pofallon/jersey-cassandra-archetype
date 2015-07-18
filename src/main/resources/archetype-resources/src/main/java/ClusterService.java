@@ -9,10 +9,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Metadata;
+import com.datastax.driver.core.*;
 
 @Path("/cluster")
 public class ClusterService {
@@ -23,15 +20,16 @@ public class ClusterService {
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String,HashMap<String,Object>> getClusterInfo() {
 
-        Metadata metadata = cluster.getMetadata();
         HashMap<String,Object> clusterInfo = new HashMap<String,Object>();
+
+        Metadata metadata = cluster.getMetadata();
 
         HashSet<HashMap<String,Object>> hosts = new HashSet<HashMap<String,Object>>();
         for (Host h : metadata.getAllHosts()) {
             HashMap<String,Object> hostMap = new HashMap<String,Object>();
 
             hostMap.put("datacenter",h.getDatacenter());
-            hostMap.put("socketAddress",h.getSocketAddress());
+            hostMap.put("address",h.getAddress());
             hostMap.put("rack",h.getRack());
             hostMap.put("state",h.getState());
             hostMap.put("tokenCount",h.getTokens().size());
@@ -50,6 +48,12 @@ public class ClusterService {
 
         }
         clusterInfo.put("keyspaces",keyspaces);
+
+        Metrics metrics = cluster.getMetrics();
+        HashMap<String,Object> clusterMetrics = new HashMap<String,Object>();
+        clusterMetrics.put("knownHosts",metrics.getKnownHosts().getValue());
+        clusterMetrics.put("openConnections",metrics.getOpenConnections().getValue());
+        clusterInfo.put("metrics",clusterMetrics);
 
         HashMap<String,HashMap<String,Object>> results = new HashMap<String,HashMap<String,Object>>();
         results.put(metadata.getClusterName(),clusterInfo);
