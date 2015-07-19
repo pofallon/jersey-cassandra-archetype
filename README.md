@@ -1,2 +1,2 @@
-# jersey-cassandra-artifact
-A maven artifact to bootstrap a Jersey API backed by Cassandra
+# jersey-cassandra-archetype
+A maven archetype to bootstrap a Jersey API backed by Cassandra
