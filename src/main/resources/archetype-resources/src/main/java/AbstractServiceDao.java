@@ -1,12 +1,20 @@
 package ${groupId};
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.mapping.MappingManager;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractServiceDao {
 
     Session session;
+    MappingManager mappingManager;
     private ConcurrentHashMap<String,PreparedStatement> statements = new ConcurrentHashMap<String,PreparedStatement>();
+
+    AbstractServiceDao(Cluster cluster, String keyspace) {
+        session = cluster.connect(keyspace);
+        this.mappingManager = new MappingManager(session);
+    }
 
     void addPreparedStatement(String key, String statement) {
         statements.put(key,session.prepare(statement));
@@ -16,8 +24,8 @@ public abstract class AbstractServiceDao {
         return(statements.get(key));
     }
 
-    AbstractServiceDao(Cluster cluster, String keyspace) {
-        this.session = cluster.connect(keyspace);
+    MappingManager getMappingManager() {
+        return mappingManager;
     }
 
     public void close() {
